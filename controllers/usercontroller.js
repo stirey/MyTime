@@ -1,3 +1,5 @@
+
+
 // import the express framework and access the router() method, assigning it to the variable called router.
 const router = require('express').Router();
 // impor the user model through our db.js and store it in User variable.
@@ -44,9 +46,14 @@ router.post('/login', function(req, res) {
             password: req.body.user.password
         }
     }) .then(function loginSuccess(user) {
-        res.status(200).json({
+
+        if (user) {
+             res.status(200).json({
             user: user
         })
+        } else {
+            res.status(500).json({ error: 'User does not exist'})
+        }      
     })
     .catch(err => res.status(500).json({ error: err}))
 });
