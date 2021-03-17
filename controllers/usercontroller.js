@@ -18,9 +18,38 @@ const User = require('../db').import('../models/usermodel');
         password: req.body.user.password,
     })
     .then(
-        res.send("User created successfully!")
-    );
- })
+        function createSuccess(user) {
+            // res.json will create a json object with the response
+            res.json({
+                // left user is name of object, right user is the parameter from our createSuccess() function.
+                user: user
+            });
+        }      
+    )
+    // if a promise gets rejected .catch method captures error and sends a 500 error with jsonified message
+    .catch(err => res.status(500).json({ error: err }))
+ });
+
+
+ /*********************
+ **** USER LOGIN ****
+ *********************/
+// router >> method(.post) >> path(/login)
+router.post('/login', function(req, res) {
+    // findOne is a sequelize method finds something within the database >> data retrieval
+    User.findOne({
+        // where is an object within sequelize tells database to look for something matching its props
+        where: {
+            email: req.body.user.email,
+            password: req.body.user.password
+        }
+    }) .then(function loginSuccess(user) {
+        res.status(200).json({
+            user: user
+        })
+    })
+    .catch(err => res.status(500).json({ error: err}))
+});
 
 // export the module for usage outside of the file
 module.exports = router;
