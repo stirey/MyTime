@@ -3,7 +3,9 @@
 // import the express framework and access the router() method, assigning it to the variable called router.
 const router = require('express').Router();
 // impor the user model through our db.js and store it in User variable.
-const User = require('../db').import('../models/usermodel');
+const User = require('../db').import('../models/usermodel')
+const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
 
 /*********************
  **** USER SIGNUP ****
@@ -17,14 +19,19 @@ const User = require('../db').import('../models/usermodel');
         lastName: req.body.user.lastName,
         occupation: req.body.user.occupation,
         email: req.body.user.email,
-        password: req.body.user.password,
+        // hashsync is a brcrypt function that hashes the password. It will salt it (salt is an algorithm) x 13
+        password: bcrypt.hashSync(req.body.user.password, 13)
     })
     .then(
         function createSuccess(user) {
+            // this variable creates and stores the token
+            let token = jwt.sign({ id: user.id}, process.env.JWT_SECRET, {expiresIn: '7d'});
             // res.json will create a json object with the response
             res.json({
                 // left user is name of object, right user is the parameter from our createSuccess() function.
-                user: user
+                user: user,
+                message: 'User successfully created!',
+                sessionToken: token
             });
         }      
     )
@@ -42,15 +49,25 @@ router.post('/login', function(req, res) {
     User.findOne({
         // where is an object within sequelize tells database to look for something matching its props
         where: {
-            email: req.body.user.email,
-            password: req.body.user.password
+            email: req.body.user.email
         }
     }) .then(function loginSuccess(user) {
 
         if (user) {
-             res.status(200).json({
-            user: user
-        })
+        // data to compare,>>data to be compared to,>>callback receiving error>> otherwise the result
+            bcrypt.compare(req.body.user.password, user.password, function(err, matches){
+                if(matches) {
+                   let token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: '7d'}) 
+                  
+                   res.status(200).json({
+                    user: user,
+                    message: "User successfully logged in! ",
+                    sessionToken: token
+                    })   
+                } else {
+                    res.status(502).send({ error: "Login failed"});//capture & add on client side
+                }
+            });          
         } else {
             res.status(500).json({ error: 'User does not exist'})
         }      
@@ -60,3 +77,6 @@ router.post('/login', function(req, res) {
 
 // export the module for usage outside of the file
 module.exports = router;
+
+// RESOURCES
+// https://www.npmjs.com/package/bcryptjs#compares-hash-callback-progresscallback

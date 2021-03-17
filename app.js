@@ -1,5 +1,6 @@
 // WELCOME TO MY OVER-COMMENTED PROJECT!!! I PLAN TO CLEAN UP ALL THE COMMENTS IN THE FUTURE, BUT FOR NOW IT HELPS ME BETTER ABSORB HOW ALL THE PIECES WORK TOGETHER :) THANK YOU FOR READING AND YOU ARE AWESOME! //
 
+require('dotenv').config();
 // requiring the use of express npm package that I've installed in my dependencies
 let express = require('express');
 // create an instance of express to fire off a top-level express() function. This allow us to create an Express app.
