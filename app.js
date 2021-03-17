@@ -16,12 +16,21 @@ sequelize.sync();
 
 // the below app.use statement must go above any routes or it won't be able to use express.json. It tells the application to use json as I process this request.
 app.use(express.json());
+
+/*****************
+**EXPOSED ROUTES**
+******************/
 // calling app.use in the first parameter to create a base URL called /mytime.
 // the 2nd paramter for the use function, I pass in mytime. All routes created in timecontroller.js file will be sub-routes.
-app.use('/mytime', mytime)
 app.use('/user', user)
 
 
+/*******************
+**PROTECTED ROUTES**
+********************/
+app.use(require('./middleware/validate-session'));
+
+app.use('/mytime', mytime)
 
 //will use express to start a UNIX socket and listen for connections on the given path(localhost:3000)
 app.listen(3000, function(){
