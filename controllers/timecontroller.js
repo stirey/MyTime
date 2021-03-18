@@ -16,7 +16,7 @@ router.get('/practice', function(req, res) {
 })
 
 /*******************
- * WORKENTRY CREATE*
+ *WORKENTRY CREATE*
  *******************/
 
 router.post('/create', (req, res) => {
@@ -33,5 +33,54 @@ router.post('/create', (req, res) => {
         .catch(err => res.status(500).json({ error: err}))
 })
 
+
+/*******************
+ *WORKENTRY VIEW*
+ *******************/
+ router.get('/', (req, res) => {
+    WorkEntry.findAll()
+    //look up orderquery on sequelize...findall look at docs.
+    .then(workentry => res.status(200).json(workentry))
+    .catch(err => res.status(500).json({ error: err }))
+});
+
+
+
+
+ /****************************
+ *WORKENTRY UPDATE BY ENTRY ID*
+ ******************************/
+// this is working
+router.put('/update/:entryId', validateSession, (req, res) => {
+    const updateWorkEntry = {
+        date: req.body.workentry.date,
+        clockin: req.body.workentry.clockin,
+        clockout: req.body.workentry.clockout,
+        task: req.body.workentry.task,
+        description: req.body.workentry.description,
+        rateofpay: req.body.workentry.rateofpay,
+        userId: req.user.id
+    }
+    
+    const query = { where: { id: req.params.entryId, userId: req.user.id }};
+
+    WorkEntry.update(updateWorkEntry, query)
+    .then((workentry) => res.status(200).json(workentry))
+    .catch(err => res.status(500).json({ error: err}))
+})
+
+
+ /*******************
+ *WORKENTRY DELETE*
+ *******************/
+// this is working
+router.delete('/delete/:entryId', validateSession, (req, res) => {
+ 
+    const query = { where: { id: req.params.entryId, userId: req.user.id }};
+
+    WorkEntry.destroy(query)
+    .then(() => res.status(200).json({ message: "Work entry removed"}))
+    .catch((err) => res.status(500).json({ error: err}));
+});
 // exporting the module for usage outside the file. 
 module.exports = router
