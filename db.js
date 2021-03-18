@@ -20,6 +20,14 @@ sequelize.authenticate().then(
         console.log(err);
     }
 );
+
+
+User = sequelize.import('./models/usermodel');
+WorkEntry = sequelize.import('./models/timemodel');
+
+WorkEntry.belongsTo(User);
+User.hasMany(WorkEntry);
+
 // export the module
 module.exports = sequelize;
 

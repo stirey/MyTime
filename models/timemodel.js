@@ -30,6 +30,9 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {notEmpty: true}
+        },
+        userId: {
+            type: DataTypes.INTEGER,
         }
     })
     return WorkEntry;

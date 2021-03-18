@@ -27,6 +27,7 @@ router.post('/create', (req, res) => {
         task: req.body.workentry.task,
         description: req.body.workentry.description,
         rateofpay: req.body.workentry.rateofpay,
+        userId: req.user.id
     }
     WorkEntry.create(work)
         .then(workentry => res.status(200).json(workentry))
@@ -51,7 +52,7 @@ router.post('/create', (req, res) => {
  *WORKENTRY UPDATE BY ENTRY ID*
  ******************************/
 // this is working
-router.put('/update/:entryId', validateSession, (req, res) => {
+router.put('/update/:entryId', (req, res) => {
     const updateWorkEntry = {
         date: req.body.workentry.date,
         clockin: req.body.workentry.clockin,
@@ -74,7 +75,7 @@ router.put('/update/:entryId', validateSession, (req, res) => {
  *WORKENTRY DELETE*
  *******************/
 // this is working
-router.delete('/delete/:entryId', validateSession, (req, res) => {
+router.delete('/delete/:entryId',(req, res) => {
  
     const query = { where: { id: req.params.entryId, userId: req.user.id }};
 
